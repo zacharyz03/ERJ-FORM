@@ -1,8 +1,18 @@
 <!doctype html>
+<!--
+  ERJ 175 Departure / Arrival Form
+  Made in collaboration by Volker Zipprich & Zachary Zipprich.
+  Volker's original departure/arrival PDF form -- with its normal procedures checklist and
+  approach and landing speed charts -- was rebuilt by Zachary, working with Claude Code
+  (Anthropic), into this offline web form for Volker's iPad: the form pages are redrawn from
+  the PDF's own layout, the screenshot pages were transcribed and checked word for word
+  against the original, and the trip, leg and speed features were added on top.
+-->
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Volker Zipprich &amp; Zachary Zipprich">
 <title>ERJ Departure / Arrival Form</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -51,7 +61,8 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 .bar button:hover { background: rgba(255, 255, 255, 0.24); }
 .bar button.danger { background: transparent; border-color: rgba(255, 170, 170, 0.6); color: #ffd6d6; }
 
-.page { position: relative; width: min(100%, calc(var(--w) * 1.5px)); aspect-ratio: var(--w) / var(--h);
+/* On screen every page shares one width; print keeps each page's original size (below). */
+.page { position: relative; width: min(100%, 918px); aspect-ratio: var(--w) / var(--h);
         margin: 0 auto 20px; background: var(--page-bg); border-radius: 6px; box-shadow: var(--page-shadow);
         overflow: hidden; container-type: inline-size; }
 .page > img, .page > svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -62,6 +73,24 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 @media (hover: hover) { .f:hover { background: rgba(52, 120, 220, 0.06); } }
 .f:focus { background: var(--field-focus); box-shadow: inset 0 0 0 1px var(--field-ring); border-radius: 2px; }
 
+.vz { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border: 1.5px solid rgba(255, 255, 255, 0.75);
+      border-radius: 8px; font: 700 14px/1 Helvetica, Arial, sans-serif; letter-spacing: 0.06em; color: #fff; }
+.no-trip .trip-only { display: none !important; }
+.start { min-height: calc(100vh - 140px); display: flex; align-items: center; justify-content: center; }
+.start[hidden] { display: none; }
+.start-card { width: min(460px, 100%); text-align: center; background: var(--page-bg); color: var(--ink-2); border-radius: 12px;
+              padding: 36px 28px; box-shadow: var(--page-shadow); }
+.start-card h1 { margin: 0 0 10px; font-size: 22px; }
+.start-card p { margin: 0 0 24px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+#start-trip { font: inherit; font-size: 17px; font-weight: 600; color: #fff; background: #34495e; border: 0; border-radius: 10px;
+              padding: 14px 40px; cursor: pointer; }
+.route { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: end; }
+.route span { padding-bottom: 12px; color: var(--muted); font-size: 18px; }
+.route label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.route input { font: 600 22px/1 Helvetica, Arial, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; text-align: center;
+               color: var(--ink-2); background: var(--btn2-bg); border: 1px solid var(--btn2-line); border-radius: 8px;
+               padding: 10px 6px; width: 100%; min-width: 0; }
+.route input:focus { outline: 2px solid var(--field-ring); outline-offset: 1px; }
 .leg-pick { display: flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
 .leg-pick select { font: inherit; color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 6px; padding: 6px 28px 6px 10px;
                    -webkit-appearance: none; appearance: none; background: rgba(255, 255, 255, 0.14)
@@ -188,13 +217,23 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 </head>
 <body>
 <div class="bar">
+  <span class="vz" aria-label="VZ">VZ</span>
   <span class="title">ERJ 175 · Departure / Arrival</span>
   <button type="button" id="theme" aria-label="Switch to light mode">Light mode</button>
-  <label class="leg-pick">Leg <select id="leg-select" aria-label="Current leg"></select></label>
-  <button type="button" id="print">Print / Save as PDF</button>
-  <button type="button" id="clear" class="danger">Clear form</button>
+  <label class="leg-pick trip-only">Leg <select id="leg-select" aria-label="Current leg"></select></label>
+  <button type="button" id="print" class="trip-only">Print / Save as PDF</button>
+  <button type="button" id="clear" class="danger trip-only">Clear form</button>
 </div>
-<main>
+
+<section class="start" id="start" hidden>
+  <div class="start-card">
+    <h1>ERJ 175 Departure / Arrival</h1>
+    <p>Start a trip to open a fresh form. You'll enter the airports for the first leg.</p>
+    <button type="button" id="start-trip">Start trip</button>
+  </div>
+</section>
+
+<main id="form-pages">
 <section class="page doc ck-page" style="--w:612;--h:792"><header class="ck-top"><span>Submitted: 07 AUG 23</span><strong>ERJ CHECKLIST</strong><span>Date:</span><span>11 DEC 23</span></header><h2 class="ck-title">NORMAL PROCEDURES CHECKLIST</h2><div class="ck-cols"><div class="ck-col"><h3 class="ck-head">SAFETY AND POWER UP</h3>
 <p class="ck-line">(Read and Do – Silent Checklist)</p>
 <p class="ck-line">FLIGHT DECK</p>
@@ -316,10 +355,32 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 <section class="page doc spd-page" style="--w:612;--h:792"><div class="spd-banner"><h2 class="spd-title perf">PERFORMANCE DATA</h2><span class="spd-brand">EMBRAER <small>170<br>175</small></span></div><div class="spd-tabs"><span class="spd-tab">Approach</span></div><p class="spd-model"><strong>EMBRAER 175</strong><br>CF34-8 ENGINES</p><p class="spd-cond">With Ice Accretion</p><table class="spd"><thead><tr><th>WEIGHT<br><br>(lb)</th><th>V<sub>REF</sub><br>FLAP 5<br>(KIAS)</th><th>V<sub>AC</sub><br>FLAP 2<br>(KIAS)</th><th>V<sub>REF</sub><br>FLAP<br>FULL<br>(KIAS)</th><th>V<sub>AC</sub><br>FLAP 4<br>(KIAS)</th><th>V<sub>FS</sub><br><br>(KIAS)</th></tr></thead><tbody><tr><td>50000</td><td>118</td><td>130</td><td>109</td><td>115</td><td>158</td></tr><tr><td>52000</td><td>121</td><td>133</td><td>111</td><td>117</td><td>161</td></tr><tr><td>54000</td><td>123</td><td>135</td><td>113</td><td>119</td><td>164</td></tr><tr><td>56000</td><td>125</td><td>138</td><td>115</td><td>121</td><td>167</td></tr><tr><td>58000</td><td>128</td><td>140</td><td>117</td><td>124</td><td>170</td></tr><tr><td>60000</td><td>130</td><td>143</td><td>119</td><td>126</td><td>173</td></tr><tr><td>62000</td><td>132</td><td>145</td><td>121</td><td>128</td><td>176</td></tr><tr><td>64000</td><td>134</td><td>147</td><td>123</td><td>130</td><td>179</td></tr><tr><td>66000</td><td>136</td><td>150</td><td>125</td><td>132</td><td>181</td></tr><tr><td>68000</td><td>138</td><td>152</td><td>126</td><td>134</td><td>184</td></tr><tr><td>70000</td><td>140</td><td>154</td><td>128</td><td>136</td><td>187</td></tr><tr><td>72000</td><td>142</td><td>156</td><td>130</td><td>138</td><td>190</td></tr><tr><td>74000</td><td>144</td><td>158</td><td>132</td><td>140</td><td>192</td></tr><tr><td>76000</td><td>146</td><td>161</td><td>133</td><td>142</td><td>195</td></tr><tr><td>78000</td><td>148</td><td>163</td><td>134</td><td>143</td><td>197</td></tr><tr><td>80000</td><td>150</td><td>165</td><td>135</td><td>145</td><td>200</td></tr><tr><td>82000</td><td>152</td><td>167</td><td>136</td><td>147</td><td>202</td></tr><tr><td>84000</td><td>154</td><td>169</td><td>136</td><td>149</td><td>205</td></tr><tr><td>86000</td><td>156</td><td>171</td><td>137</td><td>151</td><td>207</td></tr><tr><td>88000</td><td>157</td><td>173</td><td>139</td><td>152</td><td>210</td></tr><tr><td>90000</td><td>159</td><td>175</td><td>140</td><td>154</td><td>212</td></tr></tbody></table></section>
 </main>
 
+<div class="modal" id="trip-modal" hidden>
+  <form class="sheet" role="dialog" aria-modal="true" aria-labelledby="trip-title">
+    <h2 id="trip-title">Start trip</h2>
+    <p class="hint">Airports for the first leg:</p>
+    <div class="route">
+      <label>Departure<input name="dep" placeholder="SFO"></label>
+      <span aria-hidden="true">→</span>
+      <label>Arrival<input name="arr" placeholder="IAH"></label>
+    </div>
+    <div class="actions">
+      <button type="button" class="secondary" data-close>Cancel</button>
+      <button type="submit" class="primary">Start trip</button>
+    </div>
+  </form>
+</div>
+
 <div class="modal" id="leg-modal" hidden>
   <form class="sheet" role="dialog" aria-modal="true" aria-labelledby="leg-title">
     <h2 id="leg-title">Start a new leg</h2>
-    <p class="hint">Carry over from <span id="leg-from"></span>:</p>
+    <p class="hint">Airports for the new leg:</p>
+    <div class="route">
+      <label>Departure<input name="dep" placeholder="IAH"></label>
+      <span aria-hidden="true">→</span>
+      <label>Arrival<input name="arr" placeholder="ORD"></label>
+    </div>
+    <p class="hint gap">Carry over from <span id="leg-from"></span>:</p>
     <label class="carry"><input type="checkbox" name="crew" checked><span>Crew</span><em data-peek="crew"></em></label>
     <label class="carry"><input type="checkbox" name="tail" checked><span>N #</span><em data-peek="tail"></em></label>
     <label class="carry"><input type="checkbox" name="mel" checked><span>MEL / CDL</span><em data-peek="mel"></em></label>
@@ -384,14 +445,30 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
   var fields = Array.prototype.slice.call(document.querySelectorAll('.f'));
   function role(name) { return document.querySelector('.f[data-role="' + name + '"]'); }
 
-  // Saved state: one map of field id -> value per leg. The first version of this page
-  // saved a single flat map; that becomes leg 1.
+  // Saved state: per leg, a map of field id -> value (legs) and its airports (routes).
+  // No legs means no trip has been started. Earlier versions saved a flat map (v1) or
+  // legs without routes (v2); their data is kept, and a lone empty leg counts as no trip.
   var state;
   try { state = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { state = null; }
-  if (!state || !Array.isArray(state.legs) || !state.legs.length) {
-    state = { v: 2, current: 0, legs: [state && typeof state === 'object' ? state : {}] };
+  if (state && !Array.isArray(state.legs)) state = { legs: [state] };
+  if (!state) state = { legs: [] };
+  var kept = state.legs.map(function (leg, i) {
+    return { leg: leg || {}, route: (state.routes && state.routes[i]) || { dep: '', arr: '' } };
+  }).filter(function (x, i, all) { return all.length > 1 || Object.keys(x.leg).length || x.route.dep; });
+  state.legs = kept.map(function (x) { return x.leg; });
+  state.routes = kept.map(function (x) { return x.route; });
+  state.v = 3;
+  if (!(state.current >= 0 && state.current < state.legs.length)) state.current = Math.max(0, state.legs.length - 1);
+  function hasTrip() { return state.legs.length > 0; }
+
+  function routeLabel(i) {
+    var r = state.routes[i];
+    return r && r.dep && r.arr ? r.dep + '-' + r.arr : 'Leg ' + (i + 1);
   }
-  if (!(state.current >= 0 && state.current < state.legs.length)) state.current = state.legs.length - 1;
+  function badgeLabel(i) {
+    var r = state.routes[i];
+    return 'LEG ' + (i + 1) + (r && r.dep && r.arr ? ' · ' + r.dep + '-' + r.arr : '');
+  }
 
   // Like Acrobat's "auto" font size: start at the base size and shrink until the text fits the box.
   // data-base is a percentage of the page width. cqw keeps it right when printing;
@@ -408,25 +485,42 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
   }
 
   function save() {
-    var data = {};
-    fields.forEach(function (el) { if (el.value) data[el.id] = el.value; });
-    state.legs[state.current] = data;
+    if (hasTrip()) {
+      var data = {};
+      fields.forEach(function (el) { if (el.value) data[el.id] = el.value; });
+      state.legs[state.current] = data;
+    }
     try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {}
   }
 
   function setField(el, value) { el.value = value ? String(value).toUpperCase() : ''; fit(el); }
 
+  // With no trip only the Start trip screen shows; otherwise the form for the current leg.
   function showLeg(i) {
-    state.current = i;
-    var data = state.legs[i] || {};
+    var trip = hasTrip();
+    document.documentElement.classList.toggle('no-trip', !trip);
+    document.getElementById('start').hidden = trip;
+    document.getElementById('form-pages').hidden = !trip;
+    state.current = trip ? i : 0;
+    var data = state.legs[state.current] || {};
     fields.forEach(function (el) { setField(el, data[el.id]); });
     var select = document.getElementById('leg-select');
     select.innerHTML = state.legs.map(function (_, n) {
-      return '<option value="' + n + '"' + (n === i ? ' selected' : '') + '>' + (n + 1) + ' of ' + state.legs.length + '</option>';
+      return '<option value="' + n + '"' + (n === i ? ' selected' : '') + '>' + escapeHtml(routeLabel(n)) + '</option>';
     }).join('');
-    Array.prototype.forEach.call(document.querySelectorAll('.leg-badge'), function (b) { b.textContent = 'LEG ' + (i + 1); });
+    Array.prototype.forEach.call(document.querySelectorAll('.leg-badge'), function (b) { b.textContent = trip ? badgeLabel(i) : ''; });
     save();
   }
+
+  function escapeHtml(s) { return String(s).replace(/[&<>"]/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+
+  // Airport code boxes: capitals, letters and digits only, 3 (IATA) or 4 (ICAO) characters.
+  Array.prototype.forEach.call(document.querySelectorAll('.route input'), function (el) {
+    el.setAttribute('maxlength', '4'); el.setAttribute('autocomplete', 'off'); el.setAttribute('autocapitalize', 'characters');
+    el.setAttribute('autocorrect', 'off'); el.setAttribute('spellcheck', 'false'); el.required = true;
+    el.setAttribute('pattern', '[A-Z0-9]{3,4}'); el.title = '3- or 4-letter airport code, e.g. SFO or KSFO';
+    el.addEventListener('input', function () { el.value = el.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+  });
 
   var toastTimer;
   function toast(msg) {
@@ -522,20 +616,43 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
     };
   }
 
+  function readRoute(form) { return { dep: form.dep.value.trim(), arr: form.arr.value.trim() }; }
+  function goToDeparture() { document.querySelectorAll('main .page')[1].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+
+  document.getElementById('start-trip').addEventListener('click', function () {
+    var form = document.querySelector('#trip-modal form');
+    form.reset();
+    openModal('trip-modal');
+    form.dep.focus();
+  });
+
+  document.querySelector('#trip-modal form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var route = readRoute(e.target);
+    closeModal(document.getElementById('trip-modal'));
+    state = { v: 3, current: 0, legs: [{}], routes: [route] };
+    showLeg(0);
+    goToDeparture();
+    toast('Trip started: ' + route.dep + '-' + route.arr + '.');
+  });
+
   document.getElementById('new-leg').addEventListener('click', function () {
-    var vals = carryValues();
-    document.getElementById('leg-from').textContent = 'leg ' + (state.current + 1);
+    var vals = carryValues(), form = document.querySelector('#leg-modal form');
+    form.dep.value = state.routes[state.current].arr || '';   // the next leg usually departs from here
+    form.arr.value = '';
+    document.getElementById('leg-from').textContent = routeLabel(state.current);
     Array.prototype.forEach.call(document.querySelectorAll('[data-peek]'), function (p) {
       var v = vals[p.getAttribute('data-peek')];
       p.textContent = v || 'empty';
       p.classList.toggle('empty', !v);
     });
     openModal('leg-modal');
+    (form.dep.value ? form.arr : form.dep).focus();
   });
 
   document.querySelector('#leg-modal form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var form = e.target, vals = carryValues(), next = {};
+    var form = e.target, vals = carryValues(), next = {}, route = readRoute(form);
     function put(r, v) { if (v) next[role(r).id] = v; }
     if (form.crew.checked) { put('dep-crew', vals.crew); put('arr-crew', vals.crew); }
     if (form.tail.checked) put('dep-tail', vals.tail);
@@ -543,10 +660,11 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
     if (form.notams.checked) put('dep-notams', vals.notams);
     save();
     state.legs.push(next);
+    state.routes.push(route);
     closeModal(document.getElementById('leg-modal'));
     showLeg(state.legs.length - 1);
-    document.querySelectorAll('.page')[1].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    toast('Leg ' + state.legs.length + ' started. Earlier legs are in the Leg menu at the top.');
+    goToDeparture();
+    toast('Leg ' + state.legs.length + ' (' + route.dep + '-' + route.arr + ') started. Earlier legs are in the Leg menu at the top.');
   });
 
   window.addEventListener('resize', function () { fields.forEach(fit); });
@@ -570,9 +688,10 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
     document.getElementById('print-legs').innerHTML = state.legs.map(function (leg, i) {
       var crew = leg[role('dep-crew').id] || leg[role('arr-crew').id] || '', tail = leg[role('dep-tail').id] || '';
       var info = [crew, tail].filter(Boolean).join(' · ');
-      return '<label class="carry"><input type="checkbox" value="' + i + '" checked><span>Leg ' + (i + 1) +
+      var name = 'Leg ' + (i + 1) + (routeLabel(i) !== 'Leg ' + (i + 1) ? ' · ' + routeLabel(i) : '');
+      return '<label class="carry"><input type="checkbox" value="' + i + '" checked><span>' + escapeHtml(name) +
              (i === state.current ? ' <small>current</small>' : '') + '</span><em class="' + (info ? '' : 'empty') + '">' +
-             (info ? info.replace(/[&<>"]/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }) : 'no crew or N # entered') + '</em></label>';
+             (info ? escapeHtml(info) : 'no crew or N # entered') + '</em></label>';
     }).join('');
     printForm.tone.value = 'light';
     syncPrintForm();
@@ -592,7 +711,7 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
     legs.forEach(function (i) {
       [pages[1], pages[2]].forEach(function (page) {
         var copy = page.cloneNode(true);
-        copy.querySelector('.leg-badge').textContent = 'LEG ' + (i + 1);
+        copy.querySelector('.leg-badge').textContent = badgeLabel(i);
         Array.prototype.forEach.call(copy.querySelectorAll('.f'), function (el) {
           var value = state.legs[i][el.id] || '';
           el.removeAttribute('id'); el.removeAttribute('data-role'); el.tabIndex = -1;
@@ -642,14 +761,15 @@ var SPEEDS = {"noIce":[[50000,109,130,103,115,158],[52000,112,133,105,117,161],[
   document.getElementById('clear').addEventListener('click', function () {
     var n = state.legs.length;
     document.getElementById('clear-text').textContent = 'Are you sure you want to clear every field' +
-      (n > 1 ? ' on all ' + n + ' legs' : '') + '? This cannot be undone.';
+      (n > 1 ? ' on all ' + n + ' legs' : '') + '? This cannot be undone, and the form goes back to Start trip.';
     openModal('clear-modal');
     document.querySelector('#clear-modal [data-close]').focus();
   });
   document.getElementById('clear-ok').addEventListener('click', function () {
     closeModal(document.getElementById('clear-modal'));
-    state = { v: 2, current: 0, legs: [{}] };
+    state = { v: 3, current: 0, legs: [], routes: [] };
     showLeg(0);
+    window.scrollTo(0, 0);
     toast('Form cleared.');
   });
 
