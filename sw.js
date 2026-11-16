@@ -2,8 +2,12 @@
 const CACHE = 'erj-form-f78e2cc1de1d';
 const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 
+// 'reload' skips the browser's HTTP cache (GitHub Pages lets it keep files for 10 minutes),
+// so a new version never stores a stale copy of the old page.
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE)
+    .then((c) => c.addAll(FILES.map((url) => new Request(url, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
