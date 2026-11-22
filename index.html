@@ -10,7 +10,7 @@
 -->
 <html lang="en" data-theme="dark">
 <head>
-<meta name="erj-build" content="c6de45b11f86">
+<meta name="erj-build" content="a6a423906458">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Volker Zipprich &amp; Zachary Zipprich">
@@ -542,7 +542,7 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
       <label class="choice">RWY COND<select name="dest-rcc" aria-label="Destination runway condition"><option value="">—</option></select></label>
       <label class="choice">PRECIP<select name="dest-precip" aria-label="Destination precipitation"><option value="">—</option></select></label>
       <label class="ts"><input type="checkbox" name="dest-ts"> THUNDERSTORMS</label>
-      <label class="ts"><input type="checkbox" name="dest-ex17347"><span>EXEMPTION 17347<small>Alternate weather below dispatch minimums, not below half</small></span></label>
+      <label class="ts"><input type="checkbox" name="dest-ex147347"><span>EXEMPTION 147347<small>Alternate weather below dispatch minimums, not below half</small></span></label>
     </div>
     <div class="actions">
       <button type="button" class="secondary" data-close id="wx-skip">Skip</button>
@@ -608,7 +608,7 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
     <h2 id="consider-title">Considerations</h2>
     <div class="wx-head" style="border-top: 0; padding-top: 0; margin-top: 4px">Destination <span data-consider-apt></span></div>
     <div class="considers" id="consider-list"></div>
-    <p class="hint">From the destination weather: alternate required with wind over 30 KT, runway condition below (3), visibility below 2 SM, ceiling below 3000 FT, or thunderstorms; a second alternate when using exemption 17347. Also in the CONSIDERATIONS row on the departure page.</p>
+    <p class="hint">From the destination weather: alternate required with wind over 30 KT, runway condition below (3), visibility below 2 SM, ceiling below 3000 FT, or thunderstorms; a second alternate when using exemption 147347. Also in the CONSIDERATIONS row on the departure page.</p>
     <div class="actions">
       <button type="button" class="primary" data-close>Done</button>
     </div>
@@ -681,7 +681,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
   // Weather-screen answers with no box on the page yet (destination thunderstorms, precipitation),
   // kept with the leg like a box.
   [['p2-dest-ts', 'dest-ts'], ['p2-dep-precip', 'dep-precip'], ['p2-dest-precip', 'dest-precip'],
-   ['p2-dest-ex17347', 'dest-ex17347']].forEach(function (x) {
+   ['p2-dest-ex147347', 'dest-ex147347']].forEach(function (x) {
     var page = document.querySelector('.f[data-role="dep-consider"]').closest('.page'), h = document.createElement('input');
     h.type = 'hidden'; h.className = 'f'; h.id = x[0]; h.setAttribute('data-role', x[1]); h.setAttribute('data-base', '1');
     page.appendChild(h);
@@ -950,8 +950,8 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     if (role('dest-ts').value === 'TS' || /TS|CB/.test(String(role('dest-ceiling').value).toUpperCase())) why.push('THUNDERSTORMS AT ' + apt);
     var out = [];
     if (why.length) out.push({ head: 'ALTERNATE REQUIRED', why: why, kind: 'alert' });
-    // Exemption 17347 (alternates only): alternate weather below dispatch minimums but not below half
-    if (role('dest-ex17347').value === 'YES') out.push({ head: 'SECOND ALTERNATE REQUIRED', why: ['USING EXEMPTION 17347'], kind: 'alert' });
+    // Exemption 147347 (alternates only): alternate weather below dispatch minimums but not below half
+    if (role('dest-ex147347').value === 'YES') out.push({ head: 'SECOND ALTERNATE REQUIRED', why: ['USING EXEMPTION 147347'], kind: 'alert' });
     if (check.length) out.push({ head: 'CHECK', why: check, kind: 'check' });
     return out;
   }
@@ -966,7 +966,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     'dest-vis': considerField,
     'dest-ceiling': considerField,
     'dest-ts': considerField,
-    'dest-ex17347': considerField,
+    'dest-ex147347': considerField,
     'dep-vis': function () { tominRefresh(); },
     'dep-rwy': xwindField,
     'dep-rwy2': xwindField,
@@ -1223,7 +1223,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
   // ---- Weather screen: opens once the airports are in (new trip or new leg) and fills
   // the departure page's WX rows and takeoff runway; the crosswind follows on its own.
   var wxForm = document.querySelector('#wx-modal form');
-  var WX_CHECKS = [['dest-ts', 'TS'], ['dest-ex17347', 'YES']];   // weather-screen checkboxes: box, value when ticked
+  var WX_CHECKS = [['dest-ts', 'TS'], ['dest-ex147347', 'YES']];   // weather-screen checkboxes: box, value when ticked
   var WX_ROLES = ['dep-rwy', 'dep-rwy2', 'dep-press', 'dep-temp', 'dep-wind', 'dep-ceiling', 'dep-vis', 'dep-rcc', 'dep-precip',
                   'dest-rwy', 'dest-rwy2', 'dest-press', 'dest-temp', 'dest-wind', 'dest-ceiling', 'dest-vis', 'dest-rcc', 'dest-precip'];
   // A crosswind line under the runway boxes for each runway that, with the wind, gives one.
