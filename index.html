@@ -10,7 +10,7 @@
 -->
 <html lang="en" data-theme="dark">
 <head>
-<meta name="erj-build" content="b28c75dc8d6b">
+<meta name="erj-build" content="c6de45b11f86">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Volker Zipprich &amp; Zachary Zipprich">
@@ -134,8 +134,9 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 .wx-head { display: flex; align-items: baseline; gap: 8px; margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--sheet-line);
            font-size: 15px; font-weight: 700; }
 .wx-head span { font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
-.wx-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.wx-grid label.choice { grid-column: span 2; }   /* VIS, RWY COND, PRECIP: longer choices, half a line each */
+.wx-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+.wx-grid label { grid-column: span 3; }          /* four typed boxes to a line */
+.wx-grid label.choice { grid-column: span 4; }   /* VIS, RWY COND, PRECIP: longer choices, three to a line */
 .wx-grid.rwy { grid-template-columns: 1fr 4fr; align-items: end; }
 .wx-grid label { display: grid; gap: 5px; text-align: center; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.04em; }
 .wx-grid input { font: 600 17px/1.2 Helvetica, Arial, sans-serif; text-transform: uppercase; text-align: center; color: var(--ink-2);
@@ -148,7 +149,7 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
           font: 600 15px/1.3 Helvetica, Arial, sans-serif; color: var(--ink-2); }
 .xw-out[hidden] { display: none; }
 .xw-out b { flex: none; min-width: 3.2em; color: var(--muted); letter-spacing: 0.06em; }
-@media (max-width: 560px) { .wx-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .wx-grid label { grid-column: span 4; } .wx-grid label.choice { grid-column: span 6; } }
 /* Checklist and speed charts fold away during a trip; a bar opens them. */
 .ref-toggle { display: flex; align-items: center; gap: 10px; width: min(100%, 918px); margin: 0 auto 20px; padding: 14px 18px;
               font: inherit; font-size: 15px; font-weight: 600; text-align: left; color: var(--ink-2); background: var(--page-bg);
@@ -282,8 +283,11 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 .consider.alert span { color: #f3d6d6; }
 .consider.check { background: #5a4a1a; border-color: #a8872f; color: #fff; }
 .consider.check span { color: #f1e6c4; }
-.wx-grid label.ts { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; color: var(--ink-2); }
-.wx-grid label.ts input { width: 22px; height: 22px; margin: 0; }
+.wx-grid label.ts { grid-column: span 6; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; color: var(--ink-2); }
+.wx-grid label.ts input { width: 22px; height: 22px; margin: 0; flex: none; }
+.wx-grid label.ts span { display: grid; gap: 2px; text-align: left; }
+.wx-grid label.ts small { font-size: 12px; font-weight: 500; letter-spacing: 0; color: var(--muted); }
+@media (max-width: 560px) { .wx-grid label.ts { grid-column: 1 / -1; } }
 .wx-grid select { font: 600 17px/1.2 Helvetica, Arial, sans-serif; color: var(--ink-2); background: var(--btn2-bg); border: 1px solid var(--btn2-line);
                   border-radius: 8px; padding: 10px 4px; width: 100%; min-width: 0; text-align: center; text-align-last: center; }
 
@@ -502,7 +506,6 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
 <div class="modal" id="wx-modal" hidden>
   <form class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="wx-title" autocomplete="off">
     <h2 id="wx-title">Weather</h2>
-    <p class="hint">From the ATIS or METAR. The gray text shows the format; leave anything you don't have yet blank. Use the ATIS (magnetic) wind so it lines up with the runway.</p>
     <div class="wx-head">Departure <span data-wx-apt="dep"></span></div>
     <div class="wx-grid">
       <label>RUNWAY<input name="dep-rwy" placeholder="27 LCR" maxlength="3"></label>
@@ -516,7 +519,7 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
       <label>PRESS<input name="dep-press" placeholder="29.92" inputmode="decimal"></label>
       <label>TEMP<input name="dep-temp" placeholder="15"></label>
       <label>WIND<input name="dep-wind" placeholder="270/12/20"></label>
-      <label>CEILING<input name="dep-ceiling" placeholder="BKN015"></label>
+      <label>CEILING<input name="dep-ceiling" placeholder="BKN015/CLEAR"></label>
       <label class="choice">VIS<select name="dep-vis" aria-label="Departure visibility (takeoff minimums)"><option value="">—</option></select></label>
       <label class="choice">RWY COND<select name="dep-rcc" aria-label="Departure runway condition"><option value="">—</option></select></label>
       <label class="choice">PRECIP<select name="dep-precip" aria-label="Departure precipitation"><option value="">—</option></select></label>
@@ -534,11 +537,12 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
       <label>PRESS<input name="dest-press" placeholder="30.01" inputmode="decimal"></label>
       <label>TEMP<input name="dest-temp" placeholder="22"></label>
       <label>WIND<input name="dest-wind" placeholder="090/08/15"></label>
-      <label>CEILING<input name="dest-ceiling" placeholder="OVC008"></label>
+      <label>CEILING<input name="dest-ceiling" placeholder="OVC008/CLEAR"></label>
       <label class="choice">VIS<select name="dest-vis" aria-label="Destination visibility"><option value="">—</option></select></label>
       <label class="choice">RWY COND<select name="dest-rcc" aria-label="Destination runway condition"><option value="">—</option></select></label>
       <label class="choice">PRECIP<select name="dest-precip" aria-label="Destination precipitation"><option value="">—</option></select></label>
       <label class="ts"><input type="checkbox" name="dest-ts"> THUNDERSTORMS</label>
+      <label class="ts"><input type="checkbox" name="dest-ex17347"><span>EXEMPTION 17347<small>Alternate weather below dispatch minimums, not below half</small></span></label>
     </div>
     <div class="actions">
       <button type="button" class="secondary" data-close id="wx-skip">Skip</button>
@@ -604,7 +608,7 @@ body { margin: 0; padding: 0 16px 24px; background: var(--viewer);
     <h2 id="consider-title">Considerations</h2>
     <div class="wx-head" style="border-top: 0; padding-top: 0; margin-top: 4px">Destination <span data-consider-apt></span></div>
     <div class="considers" id="consider-list"></div>
-    <p class="hint">From the destination weather: alternate required with wind over 30 KT, runway condition below (3), visibility below 2 SM, ceiling below 3000 FT, or thunderstorms. Also in the CONSIDERATIONS row on the departure page.</p>
+    <p class="hint">From the destination weather: alternate required with wind over 30 KT, runway condition below (3), visibility below 2 SM, ceiling below 3000 FT, or thunderstorms; a second alternate when using exemption 17347. Also in the CONSIDERATIONS row on the departure page.</p>
     <div class="actions">
       <button type="button" class="primary" data-close>Done</button>
     </div>
@@ -676,7 +680,8 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
   var STORE = 'volker-erj-form-v1';
   // Weather-screen answers with no box on the page yet (destination thunderstorms, precipitation),
   // kept with the leg like a box.
-  [['p2-dest-ts', 'dest-ts'], ['p2-dep-precip', 'dep-precip'], ['p2-dest-precip', 'dest-precip']].forEach(function (x) {
+  [['p2-dest-ts', 'dest-ts'], ['p2-dep-precip', 'dep-precip'], ['p2-dest-precip', 'dest-precip'],
+   ['p2-dest-ex17347', 'dest-ex17347']].forEach(function (x) {
     var page = document.querySelector('.f[data-role="dep-consider"]').closest('.page'), h = document.createElement('input');
     h.type = 'hidden'; h.className = 'f'; h.id = x[0]; h.setAttribute('data-role', x[1]); h.setAttribute('data-base', '1');
     page.appendChild(h);
@@ -909,6 +914,17 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     if (rvr) return +(rvr[1] || rvr[2]) / 5280;
     return null;
   }
+  // No ceiling is written CLEAR: "none", CLR, SKC, NSC, NCD and CAVOK become CLEAR.
+  function ceilingText(text) {
+    var v = String(text || '').toUpperCase().replace(/\s+/g, ' ').trim();
+    return /^(NONE|NO CEILING|NO CIG|CLR|SKC|NSC|NCD|CAVOK|CLEAR)$/.test(v) ? 'CLEAR' : v;
+  }
+  ['dep-ceiling', 'dest-ceiling'].forEach(function (r) {
+    role(r).addEventListener('change', function () {
+      var v = ceilingText(role(r).value);
+      if (v !== role(r).value) { setField(role(r), v); changed(r); save(); }
+    });
+  });
   function ceilingFeet(text) {   // lowest broken, overcast or vertical-visibility layer, in feet
     var v = String(text || '').toUpperCase().trim(), low = Infinity, m, re = /(BKN|OVC|VV)(\d{3})/g;
     while ((m = re.exec(v))) low = Math.min(low, +m[2] * 100);
@@ -934,6 +950,8 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     if (role('dest-ts').value === 'TS' || /TS|CB/.test(String(role('dest-ceiling').value).toUpperCase())) why.push('THUNDERSTORMS AT ' + apt);
     var out = [];
     if (why.length) out.push({ head: 'ALTERNATE REQUIRED', why: why, kind: 'alert' });
+    // Exemption 17347 (alternates only): alternate weather below dispatch minimums but not below half
+    if (role('dest-ex17347').value === 'YES') out.push({ head: 'SECOND ALTERNATE REQUIRED', why: ['USING EXEMPTION 17347'], kind: 'alert' });
     if (check.length) out.push({ head: 'CHECK', why: check, kind: 'check' });
     return out;
   }
@@ -948,6 +966,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     'dest-vis': considerField,
     'dest-ceiling': considerField,
     'dest-ts': considerField,
+    'dest-ex17347': considerField,
     'dep-vis': function () { tominRefresh(); },
     'dep-rwy': xwindField,
     'dep-rwy2': xwindField,
@@ -1085,7 +1104,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
   // ---- PRECIP (weather screen): precipitation type (Volker's list). Fog is any visibility below
   // 1 SM. Kept with the leg in a hidden box until it gets a place on the page.
   var PRECIP_CHOICES = [['Rain', 'RAIN'], ['Snow', 'SNOW'], ['Drizzle', 'DRIZZLE'], ['Sleet', 'SLEET'], ['Hail', 'HAIL'],
-                        ['Fog (visibility below 1 SM)', 'FOG']].map(function (c) { return { label: c[0], value: c[1] }; });
+                        ['Fog (vis < 1 SM)', 'FOG']].map(function (c) { return { label: c[0], value: c[1] }; });
 
   // ---- Return to field: landing weight is picked from the approach and landing speeds
   // charts, which fills the speeds. Chart columns: weight, VREF flap 5, VAC flap 2,
@@ -1204,6 +1223,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
   // ---- Weather screen: opens once the airports are in (new trip or new leg) and fills
   // the departure page's WX rows and takeoff runway; the crosswind follows on its own.
   var wxForm = document.querySelector('#wx-modal form');
+  var WX_CHECKS = [['dest-ts', 'TS'], ['dest-ex17347', 'YES']];   // weather-screen checkboxes: box, value when ticked
   var WX_ROLES = ['dep-rwy', 'dep-rwy2', 'dep-press', 'dep-temp', 'dep-wind', 'dep-ceiling', 'dep-vis', 'dep-rcc', 'dep-precip',
                   'dest-rwy', 'dest-rwy2', 'dest-press', 'dest-temp', 'dest-wind', 'dest-ceiling', 'dest-vis', 'dest-rcc', 'dest-precip'];
   // A crosswind line under the runway boxes for each runway that, with the wind, gives one.
@@ -1257,7 +1277,7 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     });
     document.querySelector('[data-wx-apt="dep"]').textContent = route.dep || '';
     document.querySelector('[data-wx-apt="arr"]').textContent = route.arr || '';
-    wxForm.elements['dest-ts'].checked = role('dest-ts').value === 'TS';
+    WX_CHECKS.forEach(function (c) { wxForm.elements[c[0]].checked = role(c[0]).value === c[1]; });
     WX_ROLES.forEach(function (r) {   // a VIS saved under an older name selects its choice
       var v = role(r).value, c = VIS_SELECTS.indexOf(r) >= 0 ? visChoice(v) : -1;
       wxForm.elements[r].value = c >= 0 ? VIS_CHOICES[c].value : v;
@@ -1272,12 +1292,15 @@ var TOMINS = [{"value":"STD","label":["STD"],"req":["1 SM","5000 RVR","AD VIS RE
     e.preventDefault();
     WX_ROLES.forEach(function (r) {
       var v = wxForm.elements[r].value.trim();
+      if (r === 'dep-ceiling' || r === 'dest-ceiling') v = ceilingText(v);
       if (v === role(r).value) return;
       setField(role(r), v);
       changed(r);
     });
-    var ts = wxForm.elements['dest-ts'].checked ? 'TS' : '';
-    if (ts !== role('dest-ts').value) { role('dest-ts').value = ts; changed('dest-ts'); }
+    WX_CHECKS.forEach(function (c) {
+      var v = wxForm.elements[c[0]].checked ? c[1] : '';
+      if (v !== role(c[0]).value) { role(c[0]).value = v; changed(c[0]); }
+    });
     save();
     closeModal(document.getElementById('wx-modal'));
     var xw = role('dep-xwind').value;
